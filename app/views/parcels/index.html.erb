@@ -2,6 +2,8 @@
     var shipping_methods = <%= @shipping_methods.to_json.html_safe %>;
     var country;
     var available_methods = [];
+    var shipping_id;
+    var price = 0;
 </script>
 
 <div class="panel panel-default">
@@ -39,6 +41,20 @@
                         <option value="postnl"> PostNL </option>
                         <option value="ups"> UPS </option>
                     </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">Price</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" id="price" readonly/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">Weight</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" name="weight" id="weight" placeholder="3" step="0.01" required/>
                 </div>
             </div>
 
@@ -106,6 +122,20 @@
             }    
         }
 
+        function get_shipping_price() {
+            for (var i = 0; i < shipping_methods.length; i++) {
+                if (shipping_methods[i]['id'] == shipping_id) {
+                    for (var j = 0; j < shipping_methods[i]['countries'].length; j++) {
+                        if(shipping_methods[i]['countries'][j]['iso_2'] == country) {
+                            price = shipping_methods[i]['countries'][j]['price'];
+                            $('#price').val(price);
+                            return;
+                        }
+                    }
+                }            
+            }
+        }
+
         $('#country').on('change', function() {
             available_methods = [];
             country = $('#country').val();
@@ -115,6 +145,14 @@
                 var str = "<option value='" + available_methods[i].id + "'>" + available_methods[i].name + "</option>"
                 $('#shipping_methods').append(str);
             }
+
+            shipping_id = $('#shipping_methods').val();
+            get_shipping_price();            
+        });
+
+        $('#shipping_methods').on('change', function() {
+            shipping_id = $(this).val();
+            get_shipping_price();
         });
 
         $('#country').trigger('change');
