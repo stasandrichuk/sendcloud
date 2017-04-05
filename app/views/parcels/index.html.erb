@@ -1,0 +1,124 @@
+<script type="text/javascript">
+    var shipping_methods = <%= @shipping_methods.to_json.html_safe %>;
+    var country;
+    var available_methods = [];
+</script>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><h1>Creating A New Parcel</h1></div>
+    <div class="panel-body">
+        <%= form_tag(parcels_path, class: 'form-horizontal') do -%>
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">Name *</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="name" id="name" placeholder="Name" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="country">Country</label>
+                <div class="col-sm-10">
+                    <select name="country" id="country" class="form-control" required>
+                        <option value="NL">Netherlands</option>
+                        <option value="BE">Belgium</option>
+                        <option value="FR">France</option>
+                        <option value="DE">Germany</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2">Shipping Methods</label>
+                <div class="col-sm-10">
+                    <select name="shipping_methods" id="shipping_methods" class="form-control" required>
+                        <option value="bpost"> bpost </option>
+                        <option value="colissimo"> Colissimo </option>
+                        <option value="dhl"> DHL 
+                        <option value="dhl_de"> DHL (Germany) </option>
+                        <option value="dpd"> DPD </option>
+                        <option value="postnl"> PostNL </option>
+                        <option value="ups"> UPS </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">Postal Code *</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="postal_code" id="postalCode" placeholder="75006" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">Address *</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="address" id="address" placeholder="Rue de Rivoli" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">House Number *</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" name="house_number" id="house_number" placeholder="30" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">City *</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="text" name="city" id="city" placeholder="Ville" required/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">E-mail</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="email" name="email" id="email" placeholder="aaa@example.com"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" for="postalCode">Phone</label>
+                <div class="col-sm-10">
+                    <input class="form-control" type="number" name="telephone" id="telephone" placeholder="0645902311"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <button type="submit" class="form-control btn btn-primary" id="basicExample">Submit</button>
+                </div>
+            </div>
+        <% end -%>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        function get_shipping_methods() {
+            for (var i = 0; i < shipping_methods.length; i++) {            
+                for (var j = 0; j < shipping_methods[i]['countries'].length; j++) {
+                    if(shipping_methods[i]['countries'][j]['iso_2'] == country) {
+                        available_methods.push(shipping_methods[i]);
+                        break;
+                    }
+                }
+            }    
+        }
+
+        $('#country').on('change', function() {
+            available_methods = [];
+            country = $('#country').val();
+            get_shipping_methods();
+            $('#shipping_methods').html('');
+            for (var i = 0; i < available_methods.length; i++) {
+                var str = "<option value='" + available_methods[i].id + "'>" + available_methods[i].name + "</option>"
+                $('#shipping_methods').append(str);
+            }
+        });
+
+        $('#country').trigger('change');
+    });
+</script>
+
+
